@@ -46,8 +46,8 @@
                           :key="index" v-show="activeItemIndex==index" style="width: 200px"></el-input>
             </div>
             <span slot="footer" class="dialog-footer">
-    <el-button @click="preStep">{{activeItemIndex==10?'取消':'上一步'}}</el-button>
-    <el-button type="primary" @click="nextStep">{{activeItemIndex==10?'完成':'下一步'}}</el-button>
+    <el-button @click="preStep">{{activeItemIndex==11?'取消':'上一步'}}</el-button>
+    <el-button type="primary" @click="nextStep">{{activeItemIndex==11?'完成':'下一步'}}</el-button>
   </span>
         </el-dialog>
     </div>
@@ -167,7 +167,8 @@
                     medicalPer: 0,
                     medicalBase: 0,
                     accumulationFundPer: 0,
-                    accumulationFundBase: 0
+                    accumulationFundBase: 0,
+                    name: ''
                 }
                 this.dialogTitle = '添加工资账套';
                 this.activeItemIndex = 0;

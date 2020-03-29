@@ -34,6 +34,8 @@ public class Salary {
 
     private String name;
 
+    private Employee employee;
+
     public Integer getId() {
         return id;
     }
@@ -144,5 +146,13 @@ public class Salary {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 }

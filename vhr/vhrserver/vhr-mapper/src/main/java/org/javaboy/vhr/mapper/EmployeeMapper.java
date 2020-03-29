@@ -1,6 +1,8 @@
 package org.javaboy.vhr.mapper;
 
 import org.apache.ibatis.annotations.Param;
+import org.javaboy.vhr.model.AdjustSalary;
+import org.javaboy.vhr.model.EmpSalary;
 import org.javaboy.vhr.model.Employee;
 
 import java.util.Date;
@@ -23,13 +25,28 @@ public interface EmployeeMapper {
 
     Long getTotal(@Param("emp") Employee employee,@Param("beginDateScope") Date[] beginDateScope);
 
+    /*查看员工薪资表专用*/
+    Long getTotalEmpSalary (@Param("emp") Employee employee,@Param("beginDateScope") Date[] beginDateScope);
+
     Integer maxWorkID();
 
     Integer addEmps(@Param("list") List<Employee> list);
 
     Employee getEmployeeById(Integer id);
 
-    List<Employee> getEmployeeByPageWithSalary(@Param("page") Integer page, @Param("size") Integer size);
+    List<Employee> getEmployeeByPageWithSalary(@Param("page") Integer page, @Param("size") Integer size,@Param("emp") Employee employee);
+
+    /*查看员工薪资表专用*/
+    List<Employee> getEmpSalaryByPageWithSalary(@Param("page") Integer page, @Param("size") Integer size,@Param("emp") Employee employee);
 
     Integer updateEmployeeSalaryById(@Param("eid") Integer eid, @Param("sid") Integer sid);
+
+    Employee searchEmpForName(@Param("id") Integer id);
+
+    /*获取当前员工部门信息*/
+    List<Employee> getEmpNowDep(@Param("page") Integer page,@Param("size") Integer size,@Param("emp") Employee employee);
+    /*新增调薪员工到员工调薪表*/
+    Integer insertEmpSalarySelective(@Param("emp") Employee employee);
+
+
 }

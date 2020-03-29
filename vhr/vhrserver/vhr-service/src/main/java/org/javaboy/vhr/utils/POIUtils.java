@@ -216,6 +216,105 @@ public class POIUtils {
     }
 
     /**
+     * 导出员工培训表
+     * @param list
+     * @return
+     */
+    public static ResponseEntity<byte[]> employeeTrain2Excel(List<Employeetrain> list) {
+        //1. 创建一个 Excel 文档
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        //2. 创建文档摘要
+        workbook.createInformationProperties();
+        //3. 获取并配置文档信息
+        DocumentSummaryInformation docInfo = workbook.getDocumentSummaryInformation();
+        //文档类别
+        docInfo.setCategory("员工培训信息");
+        //文档管理员
+        docInfo.setManager("javaboy");
+        //设置公司信息
+        docInfo.setCompany("www.javaboy.org");
+        //4. 获取文档摘要信息
+        SummaryInformation summInfo = workbook.getSummaryInformation();
+        //文档标题
+        summInfo.setTitle("员工培训信息表");
+        //文档作者
+        summInfo.setAuthor("javaboy");
+        // 文档备注
+        summInfo.setComments("本文档由 javaboy 提供");
+        //5. 创建样式
+        //创建标题行的样式
+        HSSFCellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.YELLOW.index);
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        HSSFCellStyle dateCellStyle = workbook.createCellStyle();
+        dateCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy"));
+        HSSFSheet sheet = workbook.createSheet("员工培训信息表");
+        //设置列的宽度
+        sheet.setColumnWidth(0, 5 * 256); //编号
+        sheet.setColumnWidth(1, 12 * 256); //姓名
+        sheet.setColumnWidth(2, 10 * 256);  //工号
+        sheet.setColumnWidth(3, 5 * 256);   //性别
+        sheet.setColumnWidth(4, 12 * 256);  //部门
+        sheet.setColumnWidth(5, 20 * 256);  //培训日期
+        sheet.setColumnWidth(6, 30 * 256);  //培训内容
+        sheet.setColumnWidth(7, 30 * 256);  //备注
+
+        //6. 创建标题行
+        HSSFRow r0 = sheet.createRow(0);
+        HSSFCell c0 = r0.createCell(0);
+        c0.setCellValue("编号");
+        c0.setCellStyle(headerStyle);
+        HSSFCell c1 = r0.createCell(1);
+        c1.setCellStyle(headerStyle);
+        c1.setCellValue("姓名");
+        HSSFCell c2 = r0.createCell(2);
+        c2.setCellStyle(headerStyle);
+        c2.setCellValue("工号");
+        HSSFCell c3 = r0.createCell(3);
+        c3.setCellStyle(headerStyle);
+        c3.setCellValue("性别");
+        HSSFCell c4 = r0.createCell(4);
+        c4.setCellStyle(headerStyle);
+        c4.setCellValue("部门");
+        HSSFCell c5 = r0.createCell(5);
+        c5.setCellStyle(headerStyle);
+        c5.setCellValue("培训日期");
+        HSSFCell c6 = r0.createCell(6);
+        c6.setCellStyle(headerStyle);
+        c6.setCellValue("培训内容");
+        HSSFCell c7 = r0.createCell(7);
+        c7.setCellStyle(headerStyle);
+        c7.setCellValue("备注");
+
+        for (int i = 0; i < list.size(); i++) {
+            Employeetrain employeetrain = list.get(i);
+            HSSFRow row = sheet.createRow(i + 1);
+            row.createCell(0).setCellValue(employeetrain.getEmployee().getId());
+            row.createCell(1).setCellValue(employeetrain.getEmployee().getName());
+            row.createCell(2).setCellValue(employeetrain.getEmployee().getWorkID());
+            row.createCell(3).setCellValue(employeetrain.getEmployee().getGender());
+            HSSFCell cell4 = row.createCell(4);
+            cell4.setCellStyle(dateCellStyle);
+            cell4.setCellValue(employeetrain.getDepartment().getName());
+            row.createCell(5).setCellValue(employeetrain.getTraindate());
+            row.createCell(6).setCellValue(employeetrain.getTraincontent());
+            row.createCell(7).setCellValue(employeetrain.getRemark());
+
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        HttpHeaders headers = new HttpHeaders();
+        try {
+            headers.setContentDispositionFormData("attachment", new String("员工培训表.xls".getBytes("UTF-8"), "ISO-8859-1"));
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            workbook.write(baos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<byte[]>(baos.toByteArray(), headers, HttpStatus.CREATED);
+    }
+
+    /**
      * Excel 解析成 员工数据集合
      *
      * @param file
@@ -356,4 +455,73 @@ public class POIUtils {
         }
         return list;
     }
+
+
+    public static List<Employeetrain> excel2EmployeeTrain(MultipartFile file, List<Employee> allEmployees) {
+        List<Employeetrain> list = new ArrayList<>();
+        Employeetrain employeetrain = null;
+        try {
+            //1. 创建一个 workbook 对象
+            HSSFWorkbook workbook = new HSSFWorkbook(file.getInputStream());
+            //2. 获取 workbook 中表单的数量
+            int numberOfSheets = workbook.getNumberOfSheets();
+            for (int i = 0; i < numberOfSheets; i++) {
+                //3. 获取表单
+                HSSFSheet sheet = workbook.getSheetAt(i);
+                //4. 获取表单中的行数
+                int physicalNumberOfRows = sheet.getPhysicalNumberOfRows();
+                for (int j = 0; j < physicalNumberOfRows; j++) {
+                    //5. 跳过标题行
+                    if (j == 0) {
+                        continue;//跳过标题行
+                    }
+                    //6. 获取行
+                    HSSFRow row = sheet.getRow(j);
+                    if (row == null) {
+                        continue;//防止数据中间有空行
+                    }
+                    //7. 获取列数
+                    int physicalNumberOfCells = row.getPhysicalNumberOfCells();
+                    employeetrain = new Employeetrain();
+                    for (int k = 0; k < physicalNumberOfCells; k++) {
+                        HSSFCell cell = row.getCell(k);
+                        System.out.println("=========="+cell.getCellType());
+                        switch (cell.getCellType()) {
+                            case STRING:
+                                String cellValue = cell.getStringCellValue();
+                                switch (k) {
+                                    case 1:
+                                        int employeeIndex = allEmployees.indexOf(new Employee(cellValue));
+
+                                     /*   int nationIndex = allNations.indexOf(new Nation(cellValue));
+                                        employee.setNationId(allNations.get(nationIndex).getId());*/
+                                        //  employee.setNationId(allNations.get(nationIndex).getId());
+                                        employeetrain.setEid(allEmployees.get(employeeIndex).getId());
+                                        break;
+                                    case 2:
+                                        employeetrain.setTraindate(cell.getDateCellValue());
+                                        break;
+                                    case 3:
+                                        employeetrain.setTraincontent(cellValue);
+                                        break;
+                                    case 5:
+                                        employeetrain.setRemark(cellValue);
+                                        break;
+
+                                }
+                                break;
+
+
+                        }
+                    }
+                    list.add(employeetrain);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }

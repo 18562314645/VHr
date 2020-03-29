@@ -55,7 +55,7 @@ public class MailReceiver {
         if (redisTemplate.opsForHash().entries("mail_log").containsKey(msgId)) {
             //redis 中包含该 key，说明该消息已经被消费过
             logger.info(msgId + ":消息已经被消费");
-            channel.basicAck(tag, false);//确认消息已消费
+            channel.basicAck(tag, true);//确认消息已消费
             return;
         }
         //收到消息，发送邮件

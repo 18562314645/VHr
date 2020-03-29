@@ -1,11 +1,13 @@
 <template>
     <div>
-        高级资料
+        <EmpBasic></EmpBasic>
     </div>
 </template>
 
 <script>
+    import EmpBasic from './EmpBasic.vue'
     export default {
+        components: {EmpBasic},
         name: "EmpAdv"
     }
 </script>

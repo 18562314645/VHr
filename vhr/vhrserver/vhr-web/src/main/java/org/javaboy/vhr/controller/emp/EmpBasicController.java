@@ -1,5 +1,6 @@
 package org.javaboy.vhr.controller.emp;
 
+import org.javaboy.vhr.mapper.AdjustSalaryMapper;
 import org.javaboy.vhr.model.*;
 import org.javaboy.vhr.service.*;
 import org.javaboy.vhr.utils.POIUtils;
@@ -36,6 +37,8 @@ public class EmpBasicController {
     PositionService positionService;
     @Autowired
     DepartmentService departmentService;
+    @Autowired
+    SalaryService salaryService;
 
     @GetMapping("/")
     public RespPageBean getEmployeeByPage(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size, Employee employee, Date[] beginDateScope) {
@@ -111,5 +114,87 @@ public class EmpBasicController {
             return RespBean.ok("上传成功");
         }
         return RespBean.error("上传失败");
+    }
+
+    @GetMapping("/searchName")
+    public Employee searchEmpForName(@RequestParam("id") Integer id){
+        return employeeService.searchEmpForName(id);
+    }
+
+    /**
+     * 查询员工工资详情
+     * @param page
+     * @param size
+     * @param employee
+     * @return
+     */
+    @GetMapping("/adjustSalary")
+    public RespPageBean getEmpSalaryByPage(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10")Integer size, Employee employee){
+        return employeeService.getEmployeeByPageWithSalary(page,size,employee);
+    }
+
+    /**
+     * 修该员工工资
+     * @param eid
+     * @param sid
+     * @return
+     */
+    @PutMapping("/updataSalary")
+    public RespBean updateEmployeeSalaryById(Integer eid,Integer sid){
+        Integer result = employeeService.updateEmployeeSalaryById(eid, sid);
+
+        if(result==1){
+            return RespBean.ok("修改成功");
+        }else{
+            return RespBean.error("修改失败");
+        }
+    }
+
+
+    @PostMapping("/empmove")
+    public RespBean EmpMoveAndUpdataEmp(@RequestBody Employeeremove employeeremove){
+        Integer i = employeeService.EmpMoveAndUpdataEmp(employeeremove);
+        if(i==1){
+            return RespBean.ok("员工部门以调动");
+        }else {
+            return RespBean.error("员工调动失败");
+        }
+    }
+
+    @PostMapping("/addEmpAdjustSalary")
+    public RespBean insertEmpSalarySelective(@RequestBody Employee employee){
+        Integer result = employeeService.insertEmpSalarySelective(employee);
+        if(result==1){
+            return RespBean.ok("添加成功");
+        }else {
+            return RespBean.error("添加失败");
+        }
+    }
+    @PutMapping("updateEmpSalarys")
+    public RespBean updateEmpSalarys(@RequestParam("eid") Integer eid,@RequestParam("sid") Integer sid){
+        Integer result = employeeService.updateEmpSalarys(eid, sid);
+        if(result==1){
+            return RespBean.ok("员工工资更新成功");
+        }else {
+            return RespBean.error("员工工资更新失败");
+        }
+    }
+
+    /**
+     * 获取所有调薪员工信息
+     */
+    @GetMapping("/getAllAdjustSalary")
+    public List<AdjustSalary> getAllAdjustSalary(){
+        return employeeService.getAllAdjustSalary();
+    }
+
+    /**
+     * 通过eid获取单个员工调薪详情
+     * @param id
+     * @return
+     */
+    @GetMapping("/getAdjustSalaryById")
+    public AdjustSalary getAdjustSalaryById(@RequestParam("id") Integer id){
+       return   employeeService.getAdjustSalaryById(id);
     }
 }

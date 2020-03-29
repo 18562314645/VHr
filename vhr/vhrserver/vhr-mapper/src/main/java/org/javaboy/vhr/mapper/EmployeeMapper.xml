@@ -36,10 +36,14 @@
             <id column="nid" property="id"/>
             <result column="nname" property="name"/>
         </association>
+
         <association property="politicsstatus" javaType="org.javaboy.vhr.model.Politicsstatus">
             <id column="pid" property="id"/>
             <result column="pname" property="name"/>
         </association>
+
+
+
         <association property="department" javaType="org.javaboy.vhr.model.Department">
             <id column="did" property="id"/>
             <result column="dname" property="name"/>
@@ -50,7 +54,11 @@
         </association>
         <association property="position" javaType="org.javaboy.vhr.model.Position">
             <id column="posid" property="id"/>
-            <result column="posname" property="name"/>
+            <result column="pname" property="name"/>
+        </association>
+        <association property="salary" javaType="org.javaboy.vhr.model.Salary">
+            <id column="sid" property="id"/>
+            <result column="basicSalary" property="basicSalary"/>
         </association>
     </resultMap>
     <sql id="Base_Column_List">
@@ -79,23 +87,171 @@
             <result column="saccumulationFundPer" property="accumulationFundPer" jdbcType="REAL"/>
             <result column="sname" property="name" jdbcType="VARCHAR"/>
         </association>
+
+        <association property="adjustSalary" javaType="org.javaboy.vhr.model.AdjustSalary">
+            <id column="adid" property="id"/>
+            <result column="asDate" property="asdate"/>
+            <result column="beforeSalary" property="beforesalary"/>
+            <result column="afterSalary" property="aftersalary"/>
+            <result column="reason" property="reason"/>
+            <result column="remark" property="remark"/>
+        </association>
+
         <association property="department" javaType="org.javaboy.vhr.model.Department">
+            <id column="did" property="name"/>
             <result column="dname" property="name"/>
         </association>
+        <association property="position" javaType="org.javaboy.vhr.model.Position">
+            <id column="pid" property="id"/>
+            <result column="pname" property="name"/>
+        </association>
+        <association property="jobLevel" javaType="org.javaboy.vhr.model.JobLevel">
+            <id column="jid" property="id"/>
+            <result column="jname" property="name"/>
+        </association>
+
     </resultMap>
+
+
+
     <select id="getEmployeeByPageWithSalary" resultMap="EmployeeWithSalary">
-        SELECT e.*,d.`name` AS dname,s.`id` AS sid,s.`accumulationFundBase` AS
-        saccumulationFundBase,s.`accumulationFundPer` AS saccumulationFundPer,s.`allSalary` AS
-        sallSalary,s.`basicSalary` AS sbasicSalary,s.`bonus` AS sbonus,s.`createDate` AS screateDate,s.`lunchSalary` AS
-        slunchSalary,s.`medicalBase` AS smedicalBase,s.`medicalPer` AS smedicalPer,s.`name` AS sname,s.`pensionBase` AS
-        spensionBase,s.`pensionPer` AS spensionPer,s.`trafficSalary` AS strafficSalary FROM employee e LEFT JOIN
-        empsalary es ON e.`id`=es.`eid` LEFT JOIN salary s ON es.`sid`=s.`id` LEFT JOIN department d ON
-        e.`departmentId`=d.`id`
-        order by e.id
+        SELECT
+        e.id AS id,
+        e.`name` AS `name`,
+        e.workID AS workID,
+        e.email AS email,
+        e.phone AS phone,
+        e.gender AS gender,
+        de.`name` AS dname,
+        de.id AS did,
+        j.id AS jid,
+        j.`name` AS jname,
+        po.`name` AS pname,
+        sa.id AS sid,
+        sa.basicSalary AS sbasicSalary,
+        sa.bonus AS sbonus,
+        sa.lunchSalary AS slunchSalary,
+        sa.trafficSalary AS strafficSalary,
+        sa.allSalary AS sallSalary,
+        sa.pensionBase AS spensionBase,
+        sa.pensionPer AS spensionPer,
+        sa.createDate AS screateDate,
+        sa.medicalBase AS smedicalBase,
+        sa.medicalPer AS smedicalPer,
+        sa.accumulationFundBase AS saccumulationFundBase,
+        sa.accumulationFundPer AS saccumulationFundPer,
+        sa. NAME AS sname,
+        ad.id AS adid,
+        ad.asDate AS asDate,
+        ad.beforeSalary AS beforeSalary,
+        ad.afterSalary AS afterSalary,
+        ad.reason AS reason,
+        ad.remark AS remark,
+        po.id AS pid
+        FROM
+        employee e
+
+        LEFT JOIN empsalary es ON e.`id` = es.`eid`
+        LEFT JOIN salary sa ON es.`sid` = sa.`id`
+        LEFT JOIN department de ON e.`departmentId` = de.`id`
+        LEFT JOIN `position` po ON e.posId = po.id
+        LEFT JOIN adjustsalary ad ON e.id = ad.eid
+        LEFT JOIN joblevel j ON e.jobLevelId = j.id
+
+        ORDER BY
+        e.id
+
+        <if test="emp.name !=null and emp.name!=''">
+            and e.name like concat('%',#{emp.name},'%')
+        </if>
         <if test="page !=null and size !=null">
             limit #{page},#{size}
         </if>
+
     </select>
+
+
+    <!--员工工资信息-->
+    <select id="getEmpSalaryByPageWithSalary" resultMap="EmployeeWithSalary">
+        SELECT
+        e.id AS id,
+        e.`name` AS `name`,
+        e.workID AS workID,
+        e.email AS email,
+        e.phone AS phone,
+        e.gender AS gender,
+        de.`name` AS dname,
+        de.id AS did,
+        j.id AS jid,
+        j.`name` AS jname,
+        po.`name` AS pname,
+        sa.id AS sid,
+        sa.basicSalary AS sbasicSalary,
+        sa.bonus AS sbonus,
+        sa.lunchSalary AS slunchSalary,
+        sa.trafficSalary AS strafficSalary,
+        sa.allSalary AS sallSalary,
+        sa.pensionBase AS spensionBase,
+        sa.pensionPer AS spensionPer,
+        sa.createDate AS screateDate,
+        sa.medicalBase AS smedicalBase,
+        sa.medicalPer AS smedicalPer,
+        sa.accumulationFundBase AS saccumulationFundBase,
+        sa.accumulationFundPer AS saccumulationFundPer,
+        sa. NAME AS sname,
+        po.id AS pid
+        FROM
+        employee e
+        INNER  JOIN empsalary es ON e.`id` = es.`eid`
+        INNER JOIN salary sa ON es.`sid` = sa.`id`
+        INNER JOIN department de ON e.`departmentId` = de.`id`
+        INNER JOIN `position` po ON e.posId = po.id
+        INNER JOIN joblevel j ON e.jobLevelId = j.id
+
+        <if test="emp.name !=null and emp.name!=''">
+            and e.name like concat('%',#{emp.name},'%')
+        </if>
+        <if test="page !=null and size !=null">
+            limit #{page},#{size}
+        </if>
+
+    </select>
+
+    <!--获取员工工资表总记录数-->
+    <select id="getTotalEmpSalary" resultType="java.lang.Long">
+        select count(*) from employee e,empsalary es
+        <where>
+                e.id=es.eid
+            <if test="emp!=null">
+                <if test="emp.name !=null and emp.name!=''">
+                    and e.name like concat('%',#{emp.name},'%')
+                </if>
+                <if test="emp.politicId !=null">
+                    and e.politicId =#{emp.politicId}
+                </if>
+                <if test="emp.nationId !=null">
+                    and e.nationId =#{emp.nationId}
+                </if>
+                <if test="emp.jobLevelId !=null">
+                    and e.jobLevelId =#{emp.jobLevelId}
+                </if>
+                <if test="emp.departmentId !=null">
+                    and e.departmentId =#{emp.departmentId}
+                </if>
+                <if test="emp.engageForm !=null and emp.engageForm!=''">
+                    and e.engageForm =#{emp.engageForm}
+                </if>
+                <if test="emp.posId !=null">
+                    and e.posId =#{emp.posId}
+                </if>
+            </if>
+            <if test="beginDateScope !=null">
+                and e.beginDate between #{beginDateScope[0]} and #{beginDateScope[1]}
+            </if>
+
+        </where>
+    </select>
+
     <insert id="updateEmployeeSalaryById">
         REPLACE INTO empsalary (eid,sid) VALUES(#{eid},#{sid})
     </insert>
@@ -134,10 +290,37 @@
         <if test="beginDateScope !=null">
             and e.beginDate between #{beginDateScope[0]} and #{beginDateScope[1]}
         </if>
-        <if test="page !=null and size!=null">
+        <if test="page !=null and size !=null">
             limit #{page},#{size}
         </if>
     </select>
+
+    <select id="searchEmpForName" resultMap="AllEmployeeInfo">
+
+
+        SELECT
+            e.workID AS workID,
+            e.id AS id,
+            de.id AS did,
+            e.`name` AS `name`,
+            e.gender AS gender,
+            de.`name` AS dname,
+            po.`name` AS pname,
+            sa.id AS sid,
+            sa.basicSalary AS basicSalary
+        FROM
+	        employee e
+            LEFT JOIN empsalary es ON e.`id` = es.`eid`
+            LEFT JOIN salary sa ON es.`sid` = sa.`id`
+            LEFT JOIN department de ON e.`departmentId` = de.`id`
+            LEFT JOIN `position` po ON e.posId = po.id
+            LEFT JOIN adjustsalary ad ON e.id = ad.eid
+
+        WHERE e.workID = #{id}
+    </select>
+
+
+
     <select id="getTotal" resultType="java.lang.Long">
         select count(*) from employee e
         <where>
@@ -167,6 +350,7 @@
             <if test="beginDateScope !=null">
                 and e.beginDate between #{beginDateScope[0]} and #{beginDateScope[1]}
             </if>
+
         </where>
     </select>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
@@ -521,4 +705,73 @@
       workAge = #{workAge,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+    <!--获取当前员工部门信息-->
+    <select id="getEmpNowDep" resultMap="AllEmployeeInfo">
+        SELECT
+            e.id AS id,
+            e.`name` AS `name`,
+            e.workID AS workID,
+            e.gender AS gender,
+            de.`name` AS dname
+        FROM
+            employee e LEFT JOIN department de ON e.departmentId=de.id
+        <if test="emp.name !=null and emp.name!=''">
+            and e.name like concat('%',#{emp.name},'%')
+        </if>
+        <if test="emp.name !=null and emp.name!=''">
+            and e.name like concat('%',#{emp.name},'%')
+        </if>
+    </select>
+
+
+    <insert id="insertEmpSalarySelective" parameterType="org.javaboy.vhr.model.Employee" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into adjustsalary
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+            <if test="emp.id != null">
+                eid,
+            </if>
+            <if test="emp.adjustSalary.asdate != null">
+                asDate,
+            </if>
+            <if test="emp.adjustSalary.beforesalary != null">
+                beforeSalary,
+            </if>
+            <if test="emp.adjustSalary.aftersalary != null">
+                afterSalary,
+            </if>
+            <if test="emp.adjustSalary.reason != null">
+                reason,
+            </if>
+            <if test="emp.adjustSalary.remark != null">
+                remark,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+
+            <if test="emp.id != null">
+                #{emp.id,jdbcType=INTEGER},
+            </if>
+            <if test="emp.adjustSalary.asdate != null">
+                #{emp.adjustSalary.asdate,jdbcType=DATE},
+            </if>
+            <if test="emp.adjustSalary.beforesalary != null">
+                #{emp.adjustSalary.beforesalary,jdbcType=INTEGER},
+            </if>
+            <if test="emp.adjustSalary.aftersalary != null">
+                #{emp.adjustSalary.aftersalary,jdbcType=INTEGER},
+            </if>
+            <if test="emp.adjustSalary.reason != null">
+                #{emp.adjustSalary.reason,jdbcType=VARCHAR},
+            </if>
+            <if test="emp.adjustSalary.remark != null">
+                #{emp.adjustSalary.remark,jdbcType=VARCHAR},
+            </if>
+
+        </trim>
+    </insert>
+
 </mapper>

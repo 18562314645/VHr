@@ -8,6 +8,24 @@
     <result column="trainContent" property="traincontent" jdbcType="VARCHAR" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
   </resultMap>
+
+
+  <resultMap id="AllEmployeeTrainInfo" type="org.javaboy.vhr.model.Employeetrain" extends="BaseResultMap">
+
+    <association property="department" javaType="org.javaboy.vhr.model.Department">
+      <id column="did" property="id"/>
+      <result column="dname" property="name"/>
+    </association>
+
+    <association property="employee" javaType="org.javaboy.vhr.model.Employee">
+      <id column="eid" property="id"/>
+      <result column="ename" property="name"/>
+      <result column="gender" property="gender"/>
+      <result column="workID" property="workID"/>
+    </association>
+  </resultMap>
+
+
   <sql id="Base_Column_List" >
     id, eid, trainDate, trainContent, remark
   </sql>
@@ -90,4 +108,44 @@
       remark = #{remark,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <!--查询培训员工列表-->
+  <select id="getEmployeeTrainByPage" resultMap="AllEmployeeTrainInfo">
+      SELECT
+        et.id AS id,
+        em.id AS eid,
+        em.`name` AS ename,
+        em.workID AS workID,
+        em.gender AS gender,
+        de.id AS  did,
+        de.`name` AS dname,
+        et.trainDate AS trainDate,
+        et.trainContent AS trainContent,
+        et.remark AS remark
+      FROM
+
+            employee em, department de, employeetrain et
+            WHERE em.id=et.eid AND em.departmentId=de.id
+    <if test="employeetrain.employee!=null and employeetrain.department!=null">
+	      <if test="employeetrain.employee.name!=null and employeetrain.employee.name!=''">
+              AND em.name like concat('%',#{employeetrain.employee.name},'%')
+          </if>
+    </if>
+          <if test="page !=null and size!=null">
+            limit #{page},#{size}
+          </if>
+  </select>
+
+  <!--查询培训员工总记录数-->
+  <select id="getTotal" resultType="java.lang.Long">
+    SELECT COUNT(*) FROM employee em, employeetrain et
+        <where>
+            em.id=et.eid
+            <if test="employeetrain.employee !=null">
+              <if test="employeetrain.employee.name!=null and employeetrain.employee.name!=''">
+                AND em.name like concat('%',#{employeetrain.employee.name},'%')
+              </if>
+            </if>
+        </where>
+  </select>
 </mapper>

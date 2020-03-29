@@ -1,10 +1,7 @@
 package org.javaboy.vhr.service;
 
-import org.javaboy.vhr.mapper.EmployeeMapper;
-import org.javaboy.vhr.model.Employee;
-import org.javaboy.vhr.model.MailConstants;
-import org.javaboy.vhr.model.MailSendLog;
-import org.javaboy.vhr.model.RespPageBean;
+import org.javaboy.vhr.mapper.*;
+import org.javaboy.vhr.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,9 +9,11 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +35,15 @@ public class EmployeeService {
     RabbitTemplate rabbitTemplate;
     @Autowired
     MailSendLogService mailSendLogService;
+    @Autowired
+    EmployeeremoveMapper employeeremoveMapper;
+    @Autowired
+    SalaryMapper salaryMapper;
+    @Autowired
+    EmpSalaryMapper empSalaryMapper;
+    @Autowired
+    AdjustSalaryMapper adjustSalaryMapper;
+
     public final static Logger logger = LoggerFactory.getLogger(EmployeeService.class);
     SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
     SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
@@ -93,14 +101,14 @@ public class EmployeeService {
         return employeeMapper.addEmps(list);
     }
 
-    public RespPageBean getEmployeeByPageWithSalary(Integer page, Integer size) {
+    public RespPageBean getEmployeeByPageWithSalary(Integer page, Integer size,Employee employee) {
         if (page != null && size != null) {
             page = (page - 1) * size;
         }
-        List<Employee> list = employeeMapper.getEmployeeByPageWithSalary(page, size);
+        List<Employee> list = employeeMapper.getEmployeeByPageWithSalary(page, size,employee);
         RespPageBean respPageBean = new RespPageBean();
         respPageBean.setData(list);
-        respPageBean.setTotal(employeeMapper.getTotal(null, null));
+        respPageBean.setTotal(employeeMapper.getTotal( employee,null));
         return respPageBean;
     }
 
@@ -110,5 +118,82 @@ public class EmployeeService {
 
     public Employee getEmployeeById(Integer empId) {
         return employeeMapper.getEmployeeById(empId);
+    }
+
+    public Employee searchEmpForName(Integer id){
+        return employeeMapper.searchEmpForName(id);
+    }
+
+    /**
+     * 获取当前员工部门信息
+     * @param page
+     * @param size
+     * @param employee
+     * @return
+     */
+    public RespPageBean getEmpNowDep(Integer page,Integer size,Employee employee){
+        if(page!=null && size!=null){
+            page = (page - 1) * size;
+        }
+        List<Employee> data = employeeMapper.getEmpNowDep(page, size, employee);
+        Long total = employeeMapper.getTotal(employee, null);
+        RespPageBean bean=new RespPageBean();
+        bean.setData(data);
+        bean.setTotal(total);
+        return bean;
+    }
+
+    /**
+     * 执行员工部门调动和更新员工基本信息表
+     * @param employeeremove
+     * @return
+     */
+    public Integer EmpMoveAndUpdataEmp(Employeeremove employeeremove){
+        int j = employeeremoveMapper.insertSelective(employeeremove);
+        if(j!=1){
+            throw new RuntimeException("员工调动失败");
+        }
+        Employee employee=new Employee();
+        employee.setId(employeeremove.getEid());
+        employee.setJobLevelId(employeeremove.getAfterjobid());
+        employee.setDepartmentId(employeeremove.getAfterdepid());
+        int i = employeeMapper.updateByPrimaryKeySelective(employee);
+        return i;
+    }
+
+    /**
+     * 新增调薪员工到调薪表
+     * @param employee
+     * @return
+     */
+    public Integer insertEmpSalarySelective(Employee employee){
+        return employeeMapper.insertEmpSalarySelective(employee);
+    }
+
+    /**
+     * 更新empsalary表里的工资
+     * @return
+     */
+    public Integer updateEmpSalarys(Integer eid,Integer sid){
+        return empSalaryMapper.updateByPrimaryKeySelective(eid,sid);
+    }
+
+    /**
+     * 通过eid获取单个员工调薪详情
+     * @param id
+     * @return
+     */
+    public AdjustSalary getAdjustSalaryById(Integer id){
+        return adjustSalaryMapper.selectByPrimaryKey(id);
+
+    }
+
+    /**
+     * 获取所有调薪员工信息
+     * @return
+     */
+    public List<AdjustSalary> getAllAdjustSalary(){
+        List<AdjustSalary> list = adjustSalaryMapper.getAllAdjustSalary();
+        return list;
     }
 }

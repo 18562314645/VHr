@@ -93,6 +93,7 @@ public class Employee implements Serializable {
 
     private Double contractTerm;
 
+
     @JsonFormat(pattern = "yyyy-MM-dd",timezone = "Asia/Shanghai")
     private Date conversionTime;
 
@@ -112,6 +113,15 @@ public class Employee implements Serializable {
     private JobLevel jobLevel;
     private Position position;
     private Salary salary;
+    private AdjustSalary adjustSalary;
+
+    public AdjustSalary getAdjustSalary() {
+        return adjustSalary;
+    }
+
+    public void setAdjustSalary(AdjustSalary adjustSalary) {
+        this.adjustSalary = adjustSalary;
+    }
 
     public Salary getSalary() {
         return salary;
@@ -382,5 +392,12 @@ public class Employee implements Serializable {
 
     public void setWorkAge(Integer workAge) {
         this.workAge = workAge;
+    }
+
+    public Employee() {
+    }
+
+    public Employee(String name) {
+        this.name = name;
     }
 }

@@ -296,7 +296,7 @@
                         label="操作">
                     <template slot-scope="scope">
                         <el-button @click="showEditEmpView(scope.row)" style="padding: 3px" size="mini">编辑</el-button>
-                        <el-button style="padding: 3px" size="mini" type="primary">查看高级资料</el-button>
+                        <el-button @click="showMoreEmpDataView(scope.row)" style="padding: 3px" size="mini" type="primary">查看高级资料</el-button>
                         <el-button @click="deleteEmp(scope.row)" style="padding: 3px" size="mini" type="danger">删除
                         </el-button>
                     </template>
@@ -549,9 +549,9 @@
                     </el-row>
                 </el-form>
             </div>
-            <span slot="footer" class="dialog-footer">
+            <span v-show="showdata" slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="doAddEmp">确 定</el-button>
+    <el-button  type="primary" @click="doAddEmp">确 定</el-button>
   </span>
         </el-dialog>
     </div>
@@ -590,6 +590,7 @@
                 joblevels: [],
                 politicsstatus: [],
                 positions: [],
+                showdata: true,
                 tiptopDegrees: ['本科', '大专', '硕士', '博士', '高中', '初中', '小学', '其他'],
                 options: [{
                     value: '选项1',
@@ -747,6 +748,14 @@
                 this.emp = data;
                 this.inputDepName = data.department.name;
                 this.dialogVisible = true;
+            },
+            showMoreEmpDataView(data) {
+                this.initPositions();
+                this.title = '查看员工信息';
+                this.emp = data;
+                this.inputDepName = data.department.name;
+                this.dialogVisible = true;
+                this.showdata = false;
             },
             deleteEmp(data) {
                 this.$confirm('此操作将永久删除【' + data.name + '】, 是否继续?', '提示', {

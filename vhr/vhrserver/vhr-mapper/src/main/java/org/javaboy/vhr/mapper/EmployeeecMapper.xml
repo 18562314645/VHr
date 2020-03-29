@@ -4,6 +4,10 @@
   <resultMap id="BaseResultMap" type="org.javaboy.vhr.model.Employeeec" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="eid" property="eid" jdbcType="INTEGER" />
+    <result column="ename" property="ename" jdbcType="VARCHAR" />
+    <result column="workID" property="workID" jdbcType="INTEGER" />
+    <result column="gender" property="gender" jdbcType="VARCHAR" />
+    <result column="dname" property="dname" jdbcType="VARCHAR" />
     <result column="ecDate" property="ecdate" jdbcType="DATE" />
     <result column="ecReason" property="ecreason" jdbcType="VARCHAR" />
     <result column="ecPoint" property="ecpoint" jdbcType="INTEGER" />
@@ -11,13 +15,51 @@
     <result column="remark" property="remark" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, eid, ecDate, ecReason, ecPoint, ecType, remark
+    id, eid,ename,gender,dname,workID, ecDate, ecReason, ecPoint, ecType, remark
   </sql>
+  <select id="getEmployeeECByPage" resultMap="BaseResultMap">
+    SELECT
+      ec.id AS id,
+      ec.eid AS eid,
+      em.workID AS workID,
+      em.`name` AS ename,
+      em.gender AS gender,
+      de.`name` AS dname,
+      ec.ecDate AS ecDate,
+      ec.ecReason AS ecReason,
+      ec.ecPoint AS ecPoint,
+      ec.ecType AS ecType,
+      ec.remark AS remark
+  FROM
+      employeeec ec ,
+      employee em ,
+      department de
+  WHERE
+      ec.eid=em.id
+  AND em.departmentId=de.id
+    <if test="employeeec.ename !=null and employeeec.ename!='' ">
+      AND ec.ename like concat('%',#{employeeec.ename},'%')
+    </if>
+    <if test="page !=null and size!=null">
+      limit #{page},#{size}
+    </if>
+  </select>
+  <select id="getTotal" resultType="java.lang.Long">
+      select count(*) from employeeec ec
+    <where>
+      <if test="employeeec!=null">
+        <if test="employeeec.ename !=null and employeeec.ename!='' ">
+            AND ec.ename LIKE concat('%',#{employeeec.ename},'%')
+        </if>
+      </if>
+
+    </where>
+  </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
     from employeeec
-    where id = #{id,jdbcType=INTEGER}
+    where eid = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from employeeec
@@ -40,6 +82,19 @@
       <if test="eid != null" >
         eid,
       </if>
+      <if test="ename != null" >
+        ename,
+      </if>
+      <if test="workID != null" >
+        workID,
+      </if>
+      <if test="gender != null" >
+        gender,
+      </if>
+      <if test="dname != null" >
+        dname,
+      </if>
+
       <if test="ecdate != null" >
         ecDate,
       </if>
@@ -63,6 +118,19 @@
       <if test="eid != null" >
         #{eid,jdbcType=INTEGER},
       </if>
+      <if test="ename != null" >
+        #{ename,jdbcType=VARCHAR},
+      </if>
+      <if test="workID != null" >
+        #{workID,jdbcType=CHAR},
+      </if>
+      <if test="gender != null" >
+        #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="dname != null" >
+        #{dname,jdbcType=VARCHAR},
+      </if>
+
       <if test="ecdate != null" >
         #{ecdate,jdbcType=DATE},
       </if>
@@ -86,6 +154,19 @@
       <if test="eid != null" >
         eid = #{eid,jdbcType=INTEGER},
       </if>
+      <if test="ename != null" >
+        eid = #{ename,jdbcType=VARCHAR},
+      </if>
+      <if test="workID != null" >
+        eid = #{workID,jdbcType=CHAR},
+      </if>
+      <if test="gender != null" >
+        eid = #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="dname != null" >
+        eid = #{dname,jdbcType=VARCHAR},
+      </if>
+
       <if test="ecdate != null" >
         ecDate = #{ecdate,jdbcType=DATE},
       </if>

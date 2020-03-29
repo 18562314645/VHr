@@ -10,6 +10,14 @@
     <result column="reason" property="reason" jdbcType="VARCHAR" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
   </resultMap>
+
+  <resultMap id="AllInfo" type="org.javaboy.vhr.model.AdjustSalary" extends="BaseResultMap">
+      <association property="employee" javaType="org.javaboy.vhr.model.Employee">
+          <id column="emid" property="id"/>
+          <result column="name" property="name"/>
+      </association>
+  </resultMap>
+
   <sql id="Base_Column_List" >
     id, eid, asDate, beforeSalary, afterSalary, reason, remark
   </sql>
@@ -17,8 +25,19 @@
     select 
     <include refid="Base_Column_List" />
     from adjustsalary
-    where id = #{id,jdbcType=INTEGER}
+    where eid = #{id,jdbcType=INTEGER}
   </select>
+
+  <!--获取所有调薪员工信息-->
+  <select id="getAllAdjustSalary" resultMap="AllInfo">
+    SELECT
+     ad.*,
+     e.id AS emid,
+     e.name AS name
+    FROM adjustsalary ad
+    LEFT JOIN employee e ON ad.eid=e.id
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from adjustsalary
     where id = #{id,jdbcType=INTEGER}

@@ -7,6 +7,8 @@ public class EmpSalary {
 
     private Integer sid;
 
+    private Employee employee;
+
     public Integer getId() {
         return id;
     }
@@ -29,5 +31,13 @@ public class EmpSalary {
 
     public void setSid(Integer sid) {
         this.sid = sid;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 }
