@@ -1,5 +1,6 @@
 package org.javaboy.vhr.controller.emp;
 
+import org.javaboy.vhr.logaop.Operation;
 import org.javaboy.vhr.model.Employeeec;
 import org.javaboy.vhr.model.RespBean;
 import org.javaboy.vhr.model.RespPageBean;
@@ -35,6 +36,7 @@ public class EmpECController {
      * @return
      */
     @PostMapping("/")
+    @Operation("添加员工降罚信息")
     public RespBean addEmployeeEC(@RequestBody Employeeec employeeec){
         Integer i = employeeECService.addEmployeeEC(employeeec);
         if(i==1){
@@ -63,6 +65,7 @@ public class EmpECController {
      * @return
      */
     @PutMapping("/")
+    @Operation("修改员奖罚信息")
     public RespBean updataEmployeeEC(Employeeec employeeec){
         Integer i = employeeECService.updataEmployeeEC(employeeec);
         if(i==1){
@@ -77,6 +80,7 @@ public class EmpECController {
      * @return
      */
     @DeleteMapping("/{id}")
+    @Operation("删除员工奖罚信息")
     public RespBean deleteEmployeeECById(@PathVariable("id") Integer id){
         Integer i = employeeECService.deleteEmployeeECById(id);
         if(i==1){

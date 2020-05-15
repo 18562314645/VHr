@@ -1,5 +1,7 @@
 package org.javaboy.vhr.controller.emp;
 
+import org.apache.ibatis.annotations.Options;
+import org.javaboy.vhr.logaop.Operation;
 import org.javaboy.vhr.model.Employee;
 import org.javaboy.vhr.model.Employeetrain;
 import org.javaboy.vhr.model.RespBean;
@@ -32,6 +34,7 @@ public class EmpTrainsController {
      * @return
      */
     @GetMapping("/")
+
     public RespPageBean getEmployeeTrainByPage(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size, Employeetrain employeetrain){
         return employeeTrainService.getEmployeeTrainByPage(page,size,employeetrain);
     }
@@ -42,6 +45,7 @@ public class EmpTrainsController {
      * @return
      */
     @PostMapping("/")
+    @Operation("添加员工培训")
     public RespBean addEmployeeTrain(@RequestBody Employeetrain employeetrain){
         Integer result = employeeTrainService.addEmployeeTrain(employeetrain);
         if(result==1){
@@ -57,6 +61,7 @@ public class EmpTrainsController {
      * @return
      */
     @PutMapping("/")
+    @Operation("更新员工培训")
     public RespBean updataEmployeeTrain(@RequestBody Employeetrain employeetrain){
         if(employeeTrainService.updataEmployeeTrain(employeetrain)==1){
             return RespBean.ok("更新数据成功");
@@ -72,6 +77,7 @@ public class EmpTrainsController {
      * @return
      */
     @DeleteMapping("/{id}")
+    @Operation("删除员工培训")
     public RespBean deleEmployeeTrain(@PathVariable("id") Integer id){
         if(employeeTrainService.deleEmployeeTrain(id)==1){
             return RespBean.ok("删除数据成功");
@@ -85,6 +91,7 @@ public class EmpTrainsController {
      * @return
      */
     @GetMapping("/export")
+    @Operation("导出员工培训")
     public ResponseEntity<byte[]> exportData(){
         List<Employeetrain> list = (List<Employeetrain>) employeeTrainService.getEmployeeTrainByPage(null, null, new Employeetrain()).getData();
         return POIUtils.employeeTrain2Excel(list);

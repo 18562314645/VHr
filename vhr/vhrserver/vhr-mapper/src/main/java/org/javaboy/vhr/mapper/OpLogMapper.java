@@ -1,6 +1,9 @@
 package org.javaboy.vhr.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import org.javaboy.vhr.model.OpLog;
+
+import java.util.List;
 
 public interface OpLogMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +17,8 @@ public interface OpLogMapper {
     int updateByPrimaryKeySelective(OpLog record);
 
     int updateByPrimaryKey(OpLog record);
+
+    List<OpLog> selectAll(@Param("page")Integer page,@Param("size")Integer size,@Param("opLog") OpLog opLog);
+
+    Long getTotal(@Param("opLog") OpLog opLog);
 }

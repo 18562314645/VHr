@@ -1,5 +1,6 @@
 package org.javaboy.vhr.controller.salary;
 
+import org.javaboy.vhr.logaop.Operation;
 import org.javaboy.vhr.model.RespBean;
 import org.javaboy.vhr.model.Salary;
 import org.javaboy.vhr.service.SalaryService;
@@ -15,11 +16,13 @@ public class SalaryController {
     SalaryService salaryService;
 
     @GetMapping("/")
+
     public List<Salary> getAllSalaries() {
         return salaryService.getAllSalaries();
     }
 
     @PostMapping("/")
+    @Operation("添加工资套账")
     public RespBean addSalary(@RequestBody Salary salary) {
         if (salaryService.addSalary(salary) == 1) {
             return RespBean.ok("添加成功!");
@@ -28,6 +31,7 @@ public class SalaryController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation("删除工资套账")
     public RespBean deleteSalaryById(@PathVariable Integer id) {
         if (salaryService.deleteSalaryById(id) == 1) {
             return RespBean.ok("删除成功！");
@@ -36,6 +40,7 @@ public class SalaryController {
     }
 
     @PutMapping("/")
+    @Operation("更新工资套账")
     public RespBean updateSalaryById(@RequestBody Salary salary) {
         if (salaryService.updateSalaryById(salary) == 1) {
             return RespBean.ok("更新成功!");

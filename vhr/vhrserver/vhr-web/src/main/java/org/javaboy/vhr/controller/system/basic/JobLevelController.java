@@ -1,6 +1,7 @@
 package org.javaboy.vhr.controller.system.basic;
 
 import org.apache.ibatis.annotations.Delete;
+import org.javaboy.vhr.logaop.Operation;
 import org.javaboy.vhr.model.JobLevel;
 import org.javaboy.vhr.model.RespBean;
 import org.javaboy.vhr.service.JobLevelService;
@@ -24,11 +25,13 @@ public class JobLevelController {
     @Autowired
     JobLevelService jobLevelService;
     @GetMapping("/")
+
     public List<JobLevel> getAllJobLevels() {
         return jobLevelService.getAllJobLevels();
     }
 
     @PostMapping("/")
+    @Operation("添加职称信息")
     public RespBean addJobLevel(@RequestBody JobLevel jobLevel) {
         if (jobLevelService.addJobLevel(jobLevel) == 1) {
             return RespBean.ok("添加成功!");
@@ -37,6 +40,7 @@ public class JobLevelController {
     }
 
     @PutMapping("/")
+    @Operation("更新职称信息")
     public RespBean updateJobLevelById(@RequestBody JobLevel jobLevel) {
         if (jobLevelService.updateJobLevelById(jobLevel) == 1) {
             return RespBean.ok("更新成功!");
@@ -45,6 +49,7 @@ public class JobLevelController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation("删除职称信息")
     public RespBean deleteJobLevelById(@PathVariable Integer id) {
         if (jobLevelService.deleteJobLevelById(id) == 1) {
             return RespBean.ok("删除成功!");

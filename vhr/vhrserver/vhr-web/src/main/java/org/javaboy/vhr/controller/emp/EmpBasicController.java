@@ -1,10 +1,12 @@
 package org.javaboy.vhr.controller.emp;
 
+import org.javaboy.vhr.logaop.Operation;
 import org.javaboy.vhr.mapper.AdjustSalaryMapper;
 import org.javaboy.vhr.model.*;
 import org.javaboy.vhr.service.*;
 import org.javaboy.vhr.utils.POIUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Id;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,11 +43,13 @@ public class EmpBasicController {
     SalaryService salaryService;
 
     @GetMapping("/")
+
     public RespPageBean getEmployeeByPage(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size, Employee employee, Date[] beginDateScope) {
         return employeeService.getEmployeeByPage(page, size, employee,beginDateScope);
     }
 
     @PostMapping("/")
+    @Operation("新增员工")
     public RespBean addEmp(@RequestBody Employee employee) {
         if (employeeService.addEmp(employee) == 1) {
             return RespBean.ok("添加成功!");
@@ -54,6 +58,7 @@ public class EmpBasicController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation("删除员工")
     public RespBean deleteEmpByEid(@PathVariable Integer id) {
         if (employeeService.deleteEmpByEid(id) == 1) {
             return RespBean.ok("删除成功!");
@@ -62,6 +67,7 @@ public class EmpBasicController {
     }
 
     @PutMapping("/")
+    @Operation("更新员工")
     public RespBean updateEmp(@RequestBody Employee employee) {
         if (employeeService.updateEmp(employee) == 1) {
             return RespBean.ok("更新成功!");
@@ -140,6 +146,7 @@ public class EmpBasicController {
      * @return
      */
     @PutMapping("/updataSalary")
+    @Operation("修改员工工资")
     public RespBean updateEmployeeSalaryById(Integer eid,Integer sid){
         Integer result = employeeService.updateEmployeeSalaryById(eid, sid);
 
@@ -152,6 +159,7 @@ public class EmpBasicController {
 
 
     @PostMapping("/empmove")
+    @Operation("调动员工部门")
     public RespBean EmpMoveAndUpdataEmp(@RequestBody Employeeremove employeeremove){
         Integer i = employeeService.EmpMoveAndUpdataEmp(employeeremove);
         if(i==1){
@@ -162,6 +170,7 @@ public class EmpBasicController {
     }
 
     @PostMapping("/addEmpAdjustSalary")
+    @Operation("添加员工工资")
     public RespBean insertEmpSalarySelective(@RequestBody Employee employee){
         Integer result = employeeService.insertEmpSalarySelective(employee);
         if(result==1){
@@ -171,6 +180,7 @@ public class EmpBasicController {
         }
     }
     @PutMapping("updateEmpSalarys")
+    @Operation("修改员工工资")
     public RespBean updateEmpSalarys(@RequestParam("eid") Integer eid,@RequestParam("sid") Integer sid){
         Integer result = employeeService.updateEmpSalarys(eid, sid);
         if(result==1){
@@ -184,6 +194,7 @@ public class EmpBasicController {
      * 获取所有调薪员工信息
      */
     @GetMapping("/getAllAdjustSalary")
+
     public List<AdjustSalary> getAllAdjustSalary(){
         return employeeService.getAllAdjustSalary();
     }
@@ -194,6 +205,7 @@ public class EmpBasicController {
      * @return
      */
     @GetMapping("/getAdjustSalaryById")
+    @Operation("查询单个员工工资")
     public AdjustSalary getAdjustSalaryById(@RequestParam("id") Integer id){
        return   employeeService.getAdjustSalaryById(id);
     }

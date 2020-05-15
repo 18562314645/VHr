@@ -12,6 +12,7 @@
                 <el-table-column width="70" prop="trafficSalary" label="交通补助"></el-table-column>
                 <el-table-column width="70" prop="lunchSalary" label="午餐补助"></el-table-column>
                 <el-table-column width="70" prop="bonus" label="奖金"></el-table-column>
+                <el-table-column width="70" prop="allSalary" label="应发工资"></el-table-column>
                 <el-table-column width="100" prop="createDate" label="启用时间"></el-table-column>
                 <el-table-column label="养老金" align="center">
                     <el-table-column width="70" prop="pensionPer" label="比率"></el-table-column>
@@ -67,6 +68,7 @@
                     '交通补助',
                     '午餐补助',
                     '奖金',
+                    '应发工资',
                     '养老金比率',
                     '养老金基数',
                     '医疗保险比率',
@@ -80,6 +82,7 @@
                     trafficSalary: 0,
                     lunchSalary: 0,
                     bonus: 0,
+                    allSalary:0,
                     pensionPer: 0,
                     pensionBase: 0,
                     medicalPer: 0,
@@ -135,6 +138,10 @@
                 this.activeItemIndex--;
             },
             nextStep() {
+                if(this.activeItemIndex == 3){
+
+                    this.sumSalary();
+                }
                 if (this.activeItemIndex == 10) {
                     if (this.salary.id) {
                         this.putRequest("/salary/sob/", this.salary).then(resp=>{
@@ -162,6 +169,7 @@
                     trafficSalary: 0,
                     lunchSalary: 0,
                     bonus: 0,
+                    allSalary:0,
                     pensionPer: 0,
                     pensionBase: 0,
                     medicalPer: 0,
@@ -174,10 +182,19 @@
                 this.activeItemIndex = 0;
                 this.dialogVisible = true;
             },
+            sumSalary(){
+                alert(salary[basicSalary])
+
+            },
             initSalaries() {
                 this.getRequest("/salary/sob/").then(resp => {
                     if (resp) {
                         this.salaries = resp;
+                        this.salaries.forEach(item=>{
+                            allSalary=item.basicSalary+item.bonus+item.lunchSalary+item.trafficSalary;
+                            alert(allSalary);
+
+                        })
                     }
                 })
             }

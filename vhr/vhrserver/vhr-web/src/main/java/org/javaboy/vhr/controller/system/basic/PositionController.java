@@ -1,5 +1,6 @@
 package org.javaboy.vhr.controller.system.basic;
 
+import org.javaboy.vhr.logaop.Operation;
 import org.javaboy.vhr.model.Position;
 import org.javaboy.vhr.model.RespBean;
 import org.javaboy.vhr.service.PositionService;
@@ -23,11 +24,13 @@ public class PositionController {
     @Autowired
     PositionService positionService;
     @GetMapping("/")
+
     public List<Position> getAllPositions() {
         return positionService.getAllPositions();
     }
 
     @PostMapping("/")
+    @Operation("添加职位")
     public RespBean addPosition(@RequestBody Position position) {
         if (positionService.addPosition(position) == 1) {
             return RespBean.ok("添加成功!");
@@ -36,6 +39,7 @@ public class PositionController {
     }
 
     @PutMapping("/")
+    @Operation("更新职位")
     public RespBean updatePositions(@RequestBody Position position) {
         if (positionService.updatePositions(position) == 1) {
             return RespBean.ok("更新成功!");
@@ -44,6 +48,7 @@ public class PositionController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation("删除职位")
     public RespBean deletePositionById(@PathVariable Integer id) {
         if (positionService.deletePositionById(id) == 1) {
             return RespBean.ok("删除成功!");

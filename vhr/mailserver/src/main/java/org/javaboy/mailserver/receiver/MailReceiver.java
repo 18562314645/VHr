@@ -5,6 +5,10 @@ import org.javaboy.vhr.model.Employee;
 import org.javaboy.vhr.model.MailConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +50,15 @@ public class MailReceiver {
     @Autowired
     StringRedisTemplate redisTemplate;
 
-    @RabbitListener(queues = MailConstants.MAIL_QUEUE_NAME)
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(value = MailConstants.MAIL_QUEUE_NAME,durable = "true"), //队列持久化
+            exchange = @Exchange(
+                    value = MailConstants.MAIL_EXCHANGE_NAME,
+                    ignoreDeclarationExceptions = "true",
+                    type = ExchangeTypes.TOPIC
+            ),
+            key = {MailConstants.MAIL_ROUTING_KEY_NAME}
+    ))
     public void handler(Message message, Channel channel) throws IOException {
         Employee employee = (Employee) message.getPayload();
         MessageHeaders headers = message.getHeaders();

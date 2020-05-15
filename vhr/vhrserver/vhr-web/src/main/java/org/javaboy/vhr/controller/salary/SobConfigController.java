@@ -1,5 +1,6 @@
 package org.javaboy.vhr.controller.salary;
 
+import org.javaboy.vhr.logaop.Operation;
 import org.javaboy.vhr.model.Employee;
 import org.javaboy.vhr.model.RespBean;
 import org.javaboy.vhr.model.RespPageBean;
@@ -20,6 +21,7 @@ public class SobConfigController {
     SalaryService salaryService;
 
     @GetMapping("/")
+
     public RespPageBean getEmployeeByPageWithSalary(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size,Employee employee) {
         return employeeService.getEmployeeByPageWithSalary(page, size,employee);
     }
@@ -30,6 +32,7 @@ public class SobConfigController {
     }
 
     @PutMapping("/")
+    @Operation("根据id更新员工工资")
     public RespBean updateEmployeeSalaryById(Integer eid, Integer sid) {
         Integer result = employeeService.updateEmployeeSalaryById(eid, sid);
         if (result == 1 || result == 2) {

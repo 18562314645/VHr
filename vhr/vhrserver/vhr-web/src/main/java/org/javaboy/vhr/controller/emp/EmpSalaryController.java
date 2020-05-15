@@ -1,5 +1,6 @@
 package org.javaboy.vhr.controller.emp;
 
+import org.javaboy.vhr.logaop.Operation;
 import org.javaboy.vhr.model.EmpSalary;
 import org.javaboy.vhr.model.Employee;
 import org.javaboy.vhr.model.RespBean;
@@ -36,6 +37,7 @@ public class EmpSalaryController {
      * @return
      */
     @PostMapping("/")
+    @Operation("添加员工工资表")
     public RespBean addEmpSalary(@RequestBody EmpSalary empSalary){
         Integer result = empSalaryService.addEmpSalary(empSalary);
         if(result==1){
@@ -51,6 +53,7 @@ public class EmpSalaryController {
      * @return
      */
     @PutMapping("/")
+    @Operation("修改员工工资表")
     public RespBean updateEmpSalary(@RequestBody EmpSalary empSalary){
         if(empSalaryService.updateEmpSalary(empSalary)==1){
             return RespBean.ok("修改成功");
@@ -65,6 +68,7 @@ public class EmpSalaryController {
      * @return
      */
     @DeleteMapping("/{id}")
+    @Operation("删除员工工资表")
     public RespBean delteEmpSalary(@PathVariable("id") Integer id){
         if(empSalaryService.delteEmpSalary(id)==1){
             return RespBean.ok("删除成功");

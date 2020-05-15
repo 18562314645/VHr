@@ -1,5 +1,6 @@
 package org.javaboy.vhr.controller.system;
 
+import org.javaboy.vhr.logaop.Operation;
 import org.javaboy.vhr.model.Hr;
 import org.javaboy.vhr.model.RespBean;
 import org.javaboy.vhr.model.Role;
@@ -32,6 +33,7 @@ public class HrController {
     }
 
     @PutMapping("/")
+    @Operation("更新HR资料")
     public RespBean updateHr(@RequestBody Hr hr) {
         if (hrService.updateHr(hr) == 1) {
             return RespBean.ok("更新成功!");
@@ -44,6 +46,7 @@ public class HrController {
     }
 
     @PutMapping("/role")
+    @Operation("更新HR角色")
     public RespBean updateHrRole(Integer hrid, Integer[] rids) {
         if (hrService.updateHrRole(hrid, rids)) {
             return RespBean.ok("更新成功!");
@@ -52,6 +55,7 @@ public class HrController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation("删除HR")
     public RespBean deleteHrById(@PathVariable Integer id) {
         if (hrService.deleteHrById(id) == 1) {
             return RespBean.ok("删除成功!");

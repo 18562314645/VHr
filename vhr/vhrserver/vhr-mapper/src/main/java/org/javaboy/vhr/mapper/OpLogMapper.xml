@@ -7,6 +7,13 @@
     <result column="operate" property="operate" jdbcType="VARCHAR" />
     <result column="hrid" property="hrid" jdbcType="INTEGER" />
   </resultMap>
+
+  <resultMap id="ResultMapAll" type="org.javaboy.vhr.model.OpLog" extends="BaseResultMap">
+      <association property="hr1" javaType="org.javaboy.vhr.model.Hr1">
+          <id column="hrid" property="id"/>
+          <result column="hname" property="name"/>
+      </association>
+  </resultMap>
   <sql id="Base_Column_List" >
     id, addDate, operate, hrid
   </sql>
@@ -79,4 +86,35 @@
       hrid = #{hrid,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectAll" resultMap="ResultMapAll" parameterType="org.javaboy.vhr.model.OpLog">
+      SELECT
+          ol.addDate AS adddate,
+          ol.operate AS operate,
+          h.id AS hrid,
+          h.`name` AS hname
+      FROM
+          oplog ol
+      INNER JOIN hr h ON ol.hrid=h.id
+    <if test="opLog.hr1!=null">
+        <if test="opLog.hr1.name!=null">
+          AND h.name  like concat('%',#{opLog.hr1.name},'%')
+        </if>
+    </if>
+    <if test="page !=null and size!=null">
+      limit #{page},#{size}
+    </if>
+  </select>
+
+  <select id="getTotal" resultType="java.lang.Long">
+      SELECT COUNT(*) FROM oplog ol,hr h
+      <where>
+        ol.hrid=h.id
+          <if test="opLog.hr1!=null">
+              <if test="opLog.hr1.name!=null">
+                  AND h.name like concat('%',#{opLog.hr1.name},'%')
+              </if>
+          </if>
+      </where>
+  </select>
 </mapper>

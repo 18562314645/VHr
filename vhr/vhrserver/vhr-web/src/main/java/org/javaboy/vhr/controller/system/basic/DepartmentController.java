@@ -1,5 +1,6 @@
 package org.javaboy.vhr.controller.system.basic;
 
+import org.javaboy.vhr.logaop.Operation;
 import org.javaboy.vhr.model.Department;
 import org.javaboy.vhr.model.RespBean;
 import org.javaboy.vhr.service.DepartmentService;
@@ -23,10 +24,12 @@ public class DepartmentController {
     @Autowired
     DepartmentService departmentService;
     @GetMapping("/")
+
     public List<Department> getAllDepartments() {
         return departmentService.getAllDepartments();
     }
     @PostMapping("/")
+    @Operation("添加部门信息")
     public RespBean addDep(@RequestBody Department dep) {
         departmentService.addDep(dep);
         if (dep.getResult() == 1) {
@@ -36,6 +39,7 @@ public class DepartmentController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation("删除部门信息")
     public RespBean deleteDepById(@PathVariable Integer id) {
         Department dep = new Department();
         dep.setId(id);
