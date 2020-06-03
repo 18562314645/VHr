@@ -50,15 +50,7 @@ public class MailReceiver {
     @Autowired
     StringRedisTemplate redisTemplate;
 
-    @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(value = MailConstants.MAIL_QUEUE_NAME,durable = "true"), //队列持久化
-            exchange = @Exchange(
-                    value = MailConstants.MAIL_EXCHANGE_NAME,
-                    ignoreDeclarationExceptions = "true",
-                    type = ExchangeTypes.TOPIC
-            ),
-            key = {MailConstants.MAIL_ROUTING_KEY_NAME}
-    ))
+    @RabbitListener(queues = MailConstants.MAIL_QUEUE_NAME)
     public void handler(Message message, Channel channel) throws IOException {
         Employee employee = (Employee) message.getPayload();
         MessageHeaders headers = message.getHeaders();
